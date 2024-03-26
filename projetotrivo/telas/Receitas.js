@@ -9,7 +9,7 @@ const HomeScreen = ({ navigation }) => {
   const [placeholderText, setPlaceholderText] = useState('');
   const [cards, setCards] = useState([]);
   const [isInfoTabVisible, setIsInfoTabVisible] = useState(false);
-  const {receitas} = useContext(Dados)
+  const {receitas, setReceitas} = useContext(Dados)
 
   const handleAddCard = () => {
     setIsButtonsVisible(true);
@@ -27,15 +27,9 @@ const HomeScreen = ({ navigation }) => {
     setIsScreenOverlayed(false);
   };
 
-  const addNewCard = () => {
-    const newCard = {
-      id: cards.length + 1,
-      title: 'Novo Card',
-      description: 'Descrição do novo card',
-    };
-    setCards([...cards, newCard]);
+  const deleteCard = (id) => {
+    setCards(cards.filter((card) => card.id !== id));
   };
-
 
   const handleHeaderPress = () => {
     setIsInfoTabVisible(!isInfoTabVisible);
@@ -46,7 +40,7 @@ const HomeScreen = ({ navigation }) => {
       <TouchableOpacity onPress={handleHeaderPress}>
         <View style={styles.header}>
           <Image
-            source={require('../assets/logotrivo.png')}
+            source={require('../assets/logoreceitas.png')}
             style={styles.logo}
           />
           <Image
@@ -72,8 +66,7 @@ const HomeScreen = ({ navigation }) => {
       <View style={styles.statsContainer}>
         <View style={styles.statsColumn}>
           <Text style={styles.statsTitle}>Rendimento</Text>
-          <Text style={[styles.statsAmount, { color: 'yellow', fontSize: 40
-           }]}>R$ 3.800,80</Text>
+          <Text style={[styles.statsAmount, { color: 'yellow', fontSize: 55 }]}>R$ 3.800,80</Text>
         </View>
       </View>
       <View style={styles.secondaryStatsContainer}>
@@ -98,12 +91,12 @@ const HomeScreen = ({ navigation }) => {
       <View style={styles.contentContainer}>
         <Text style={styles.lastUpdatesText}>Últimas atualizações</Text>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          {cards.map((card) => (
-            <View key={card.id} style={styles.cardContainer}>
+          {receitas.map((card, index) => (
+            <View key={index} style={styles.cardContainer}>
               <TouchableOpacity style={styles.card}>
-                <Text style={styles.cardTitle}>{card.title}</Text>
-                <Text style={styles.cardDescription}>{card.description}</Text>
-                <TouchableOpacity onPress={() => deleteCard(card.id)} style={styles.deleteButton}>
+                <Text style={styles.cardTitle}>{card.nome}</Text>
+                <Text style={styles.cardDescription}>{card.origem}</Text>
+                <TouchableOpacity onPress={() => deleteCard(index)} style={styles.deleteButton}>
                   <AntDesign name="delete" size={24} color="white" />
                 </TouchableOpacity>
               </TouchableOpacity>
@@ -111,21 +104,15 @@ const HomeScreen = ({ navigation }) => {
           ))}
         </ScrollView>
       </View>
-      {isScreenOverlayed && (
-        <TouchableOpacity style={styles.overlay} onPress={handleOverlayPress} />
-      )}
-      {isButtonsVisible && (
-        <View style={styles.buttonsContainer}>
-          <TouchableOpacity onPress={() => navigation.navigate("Receitas")} style={styles.optionButton}>
-            <Text style={styles.optionButtonText}>Receita</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleChooseOption('Despesa')} style={styles.optionButton}>
-            <Text style={styles.optionButtonText}>Despesa</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      
       <TouchableOpacity onPress={handleAddCard} style={styles.addButton}>
         <AntDesign name="plus" size={24} color="white" />
+      </TouchableOpacity>
+
+
+      <TouchableOpacity style={styles.addButton} 
+      onPress={() => navigation.navigate("AddReceitas")}>
+          <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -169,8 +156,8 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   }, 
   logo: {
-    width: 60,
-    height: 50,
+    width: 100,
+    height: 90,
     marginLeft: 10,
     resizeMode: 'contain',
   },
